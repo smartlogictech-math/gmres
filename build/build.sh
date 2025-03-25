@@ -7,5 +7,5 @@ make -j8
 
 # ctest --output-on-failure
 
-# ./tests/vadd_tests
+# ./tests/gmres_tests
 # ./samples/vadd_demo

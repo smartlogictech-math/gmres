@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(vadd LANGUAGES C CXX CUDA)
+project(gmres LANGUAGES C CXX CUDA)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall")
