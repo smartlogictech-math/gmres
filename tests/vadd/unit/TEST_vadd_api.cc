@@ -8,7 +8,7 @@
 
 #include "vadd_api.h"
 
-#include "fixtures/vadd_api_fixture.h"
+#include "../vadd_api_fixture.h"
 
 TEST_F(VaddAPITest, SmallScaleTest) {
     const int n = 5;

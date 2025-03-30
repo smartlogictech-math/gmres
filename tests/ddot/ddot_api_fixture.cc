@@ -6,7 +6,7 @@
  * @attention 
  */
 
-#include "fixtures/ddot_api_fixture.h"
+#include "ddot_api_fixture.h"
 
 #include <iostream>
 

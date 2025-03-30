@@ -8,7 +8,7 @@
 
 #include "blas_ddot_api.h"
 
-#include "fixtures/ddot_api_fixture.h"
+#include "../ddot_api_fixture.h"
 
 TEST_F(BlasDdotAPITest, input_params){
     ASSERT_NE(SetVecLen(1), nullptr);
