@@ -9,11 +9,11 @@
 #ifndef _BLAS_DDOT_API_H_
 #define _BLAS_DDOT_API_H_
 
+#include "blas_handle.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "blas_handle.h"
 
 /**
  * @brief result = x' * y
@@ -23,11 +23,9 @@ extern "C" {
  * @param x device, vector with n elements.
  * @param y device, vector with n elements.
  * @param result host or device, the resulting dot product, which is 0.0 if n<=0.
- * @return int 
- * @retval 0: success
- * @retval -1: failure
+ * @return blasStatus_t 
  */
-int blasDdot(blasHandle_t handle, const int n, const double *x, const double *y, const double *result);
+blasStatus_t blasDdot(blasHandle_t handle, const int n, const double *x, const double *y, double *result);
 
 
 #ifdef __cplusplus
