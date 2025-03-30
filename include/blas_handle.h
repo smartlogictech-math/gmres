@@ -8,21 +8,21 @@
 #ifndef _BLAS_HANDLE_H_
 #define _BLAS_HANDLE_H_
 
+#include <cuda_runtime.h>
+
+#include "blas_status.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <cuda_runtime.h>
+typedef struct blasContext* blasHandle_t;
 
-struct blasContext{
-    cudaStream_t stream;
-};
-typedef struct blasContext *blasHandle_t;
+blasStatus_t blasCreate(blasHandle_t* handle);
+blasStatus_t blasDestroy(blasHandle_t handle);
 
-int blasSetStream(blasHandle_t handle, cudaStream_t stream){
-    handle->stream = stream;
-    return 0;
-}
+blasStatus_t blasSetStream(blasHandle_t handle, cudaStream_t stream);
+blasStatus_t blasGetStream(blasHandle_t handle, cudaStream_t *stream);
 
 #ifdef __cplusplus
 }

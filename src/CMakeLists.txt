@@ -10,7 +10,7 @@ add_library(hal OBJECT
   ${HAL_SRC_FILES}
 )
 target_include_directories(hal
-  PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/hal
+  PRIVATE ${CMAKE_SOURCE_DIR}/include
 )
 
 # Kernel
