@@ -25,9 +25,7 @@ add_library(kernel OBJECT
     ${KERNEL_SRC_FILES}
 )
 target_include_directories(kernel
-#   PUBLIC ${CMAKE_SOURCE_DIR}/include
-  PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/ 
-  PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/kernel
+  PRIVATE ${CMAKE_SOURCE_DIR}/include
 )
 target_link_libraries(kernel PRIVATE hal)
 
@@ -47,6 +45,4 @@ add_library(${project_lib_name}
 target_include_directories(${project_lib_name}
   PRIVATE /usr/local/cuda/include
   PUBLIC ${CMAKE_SOURCE_DIR}/include
-  PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/hal
-  PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/kernel
 )
