@@ -7,6 +7,7 @@
  */
 
 #include "blas_ddot_api.h"
+#include "internal/kernel/ddot_kernel.h"
 
 #include "internal/hal/blasContext_impl.h"
 
@@ -31,6 +32,22 @@ extern "C" blasStatus_t blasDdot(blasHandle_t handle, const int n, const double 
     if(!checkParas(handle, n, x, y, result)){
         return BLAS_STATUS_INVALID_VALUE;
     }
+
+    cudaPointerAttributes attrRes;
+    cudaPointerGetAttributes(&attrRes, result);
+    double *dRes;
+    if (cudaMemoryTypeDevice == attrRes.type){
+        dRes = result;
+    }else {
+        cudaMalloc(&dRes, sizeof(double));
+    }
     
+    launchDdot(handle, n, x, y, dRes);
+
+    if(cudaMemoryTypeDevice != attrRes.type){
+        cudaMemcpyAsync(result, dRes, sizeof(double), cudaMemcpyDeviceToHost, handle->stream);
+        cudaFreeAsync(dRes, handle->stream);
+    }
+
     return BLAS_STATUS_SUCCESS;
 }
