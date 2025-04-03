@@ -21,7 +21,6 @@ __global__ void daxpyKernel(unsigned n, double* alpha, const double* x, const do
 
 void launchDaxpy(blasHandle_t handle, unsigned n, double* alpha, const double* x, const double* y, double* result);
 
-
 #ifdef __cplusplus
 }
 #endif

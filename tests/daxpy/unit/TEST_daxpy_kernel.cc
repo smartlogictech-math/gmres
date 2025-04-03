@@ -11,8 +11,8 @@
 #include "daxpy_kernel.h"
 
 
-static bool cmpData(const double* a, const double* b, const unsigned n){
-    for(unsigned i=0;i<n;i++){
+static bool cmpData(const double* a, const double* b, const int n){
+    for(int i=0;i<n;i++){
         if(a[i] != b[i]){
             return false;
         }
@@ -20,7 +20,7 @@ static bool cmpData(const double* a, const double* b, const unsigned n){
     return true;
 }
 
-static double* read_vector_from_file(const char* filename, size_t* n) {
+static double* read_vector_from_file(const char* filename, unsigned* n) {
     FILE* file = fopen(filename, "rb");
     if (!file) {
         perror("Failed to open file");
@@ -68,11 +68,11 @@ static double* read_vector_from_file(const char* filename, size_t* n) {
 //     return 0;
 // }
 
-static void test(unsigned n, double* alpha, const char* fileX, const char* fileY,const char* fileResult){
+static void test(int n, double* alpha, const char* fileX, const char* fileY,const char* fileResult){
     blasHandle_t handle;
     ASSERT_EQ(BLAS_STATUS_SUCCESS, blasCreate(&handle));
 
-    size_t sizeX, sizeY, sizeResult;
+    unsigned sizeX, sizeY, sizeResult;
     double* hX = read_vector_from_file(fileX, &sizeX);
     double* hY = read_vector_from_file(fileY, &sizeY);
     double* result = read_vector_from_file(fileResult, &sizeResult);
@@ -87,7 +87,7 @@ static void test(unsigned n, double* alpha, const char* fileX, const char* fileY
         return ;
     }
     
-    if (!((sizeX == sizeY) && (sizeX == sizeResult) && (sizeX == n))) {
+    if (!((sizeX == sizeY) && (sizeX == sizeResult) && (sizeX == (unsigned)n))) {
         fprintf(stderr, "%s(%u): x ,y and result vectors must have the same size, and they all should equal n.\n", __FUNCTION__, __LINE__);
         fflush(stderr);
         
@@ -134,9 +134,14 @@ static void test(unsigned n, double* alpha, const char* fileX, const char* fileY
 }
 
 TEST(BlasDaxpyKernelTest,SmallScaleTest){
+    
     double alpha = 32.678;
-    test(1000, &alpha, "/home/yu.xiao/code/generate_test_data/x_data/x_32p678000.bin",
-    "/home/yu.xiao/code/generate_test_data/y_data/y_32p678000.bin",
-    "/home/yu.xiao/code/generate_test_data/output_data/result_32p678000.bin");
+    double* dAlpha;
+    cudaMalloc(&dAlpha, sizeof(double));
+    cudaMemcpy(dAlpha, &alpha, sizeof(double), cudaMemcpyHostToDevice);
+
+    test(1000, dAlpha, "/workspace/gmres/tests/daxpy/data/x_32p678000.bin",
+    "/workspace/gmres/tests/daxpy/data/y_32p678000.bin",
+    "/workspace/gmres/tests/daxpy/data/result_32p678000.bin");
     
 }

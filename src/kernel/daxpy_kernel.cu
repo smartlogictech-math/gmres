@@ -14,7 +14,7 @@
 #define ELEMENTS_PER_THREAD 256 ///< 可调节
 #define THREADS_PER_BLOCK 32    ///< 可调节    
 
-__device__ blasStatus_t memcpyGlobalToLocal(double* dst, const double* src, const unsigned start, const unsigned n){
+__device__ blasStatus_t memcpyGlobalToLocal(double* dst, const double* src, const int start, const int n){
     
     for(int i = 0; i < n; i++){
         dst[i] = src[start+i];
@@ -23,7 +23,7 @@ __device__ blasStatus_t memcpyGlobalToLocal(double* dst, const double* src, cons
     return BLAS_STATUS_SUCCESS;
 }
 
-__device__ blasStatus_t memcpyLocalToGlobal(double* dst, const double* src, const unsigned start, const unsigned n){
+__device__ blasStatus_t memcpyLocalToGlobal(double* dst, const double* src, const int start, const int n){
     
     for(int i = 0; i < n; i++){
         dst[start+i] = src[i];
@@ -32,7 +32,7 @@ __device__ blasStatus_t memcpyLocalToGlobal(double* dst, const double* src, cons
     return BLAS_STATUS_SUCCESS;
 }
 
-__device__ blasStatus_t daxpyHal(const double* localX,const double* localY,double* localRet,const double alpha,const unsigned n){
+__device__ blasStatus_t daxpyHal(const double* localX,const double* localY,double* localRet,const double alpha,const int n){
 
     for(int i=0; i<n; i++){
         localRet[i] = alpha * localX[i] + localY[i];
@@ -45,20 +45,23 @@ __global__ void daxpyKernel(unsigned n, double* alpha, const double* x, const do
 
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
     int start = tid * ELEMENTS_PER_THREAD;
+    if(start >= n) return ; ///< 防止越界访问
     int end = start + ELEMENTS_PER_THREAD;
     // 确保不超过数组边界
     if (end > n) {
         end = n;
     }
-    unsigned cnt = end - start;
-    double* localX = (double*)malloc(cnt * sizeof(double));
-    double* localY = (double*)malloc(cnt * sizeof(double));
-    double* localRet = (double*)malloc(cnt * sizeof(double));
+    int cnt = end - start;
+    double localX[ELEMENTS_PER_THREAD];
+    double localY[ELEMENTS_PER_THREAD];
+    double localRet[ELEMENTS_PER_THREAD];
 
     memcpyGlobalToLocal(localX,x,start,cnt);
     memcpyGlobalToLocal(localY,y,start,cnt);
 
-    daxpyHal(localX,localY,localRet,*alpha,cnt);
+    double dAlpha = *alpha;
+
+    daxpyHal(localX,localY,localRet, dAlpha ,cnt);
 
     memcpyLocalToGlobal(result,localRet,start,cnt);
 

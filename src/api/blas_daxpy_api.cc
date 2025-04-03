@@ -42,13 +42,14 @@ blasStatus_t blasDaxpy(blasHandle_t handle, unsigned n, double* alpha, const dou
 
     cudaPointerAttributes attrAlpha;
     cudaPointerGetAttributes(&attrAlpha, alpha);
-
     double* dAlpha;
     if(cudaMemoryTypeDevice == attrAlpha.type){
         dAlpha = alpha;
     }else{
         cudaMalloc(&dAlpha, sizeof(double));
+        cudaMemcpy(dAlpha, alpha, sizeof(double), cudaMemcpyHostToDevice);
     }
+
 
     launchDaxpy(handle, n, dAlpha, x, y, result);
 

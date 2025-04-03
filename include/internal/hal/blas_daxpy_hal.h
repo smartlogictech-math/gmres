@@ -17,14 +17,14 @@
 extern "C" {
 #endif
 
-
 __device__ blasStatus_t memcpyGlobalToLocal(double* dst, const double* src, const unsigned start, const unsigned n);
 
-__device__ blasStatus_t memcpyLocalToGlobal(double* dst, const double* src, const unsigned start, const unsigned n);
+__device__ blasStatus_t memcpyLocalToGlobal(double* dst, const double* src, const int start, const int n);
 
-__device__ blasStatus_t daxpyHal(const double* localX,const double* localY,double* localRet,const double alpha,const unsigned n);
+__device__ blasStatus_t daxpyHal(const double* localX,const double* localY,double* localRet,const double alpha,const int n);
 
- 
+
+
 
 #ifdef __cplusplus
 }

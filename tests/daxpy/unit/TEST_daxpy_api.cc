@@ -11,8 +11,8 @@
 #include "blas_daxpy_api.h"
 
 
-static bool cmpData(const double* a, const double num, const unsigned n){
-    for(unsigned i=0;i<n;i++){
+static bool cmpData(const double* a, const double num, const int n){
+    for(int i=0;i<n;i++){
         if(num != a[i]){
             return false;
         }
@@ -82,13 +82,12 @@ TEST(BlasDaxpyAPITest, AlphaAddr){
 
     double *dX, *dY, *dResult, *dAlpha;
     double *hX, *hY, *hResult1, *hResult2, alpha = 2.0;
-    const int n = (1 << 21) + 7;
+    const unsigned n = (1 << 21) + 7;
 
     cudaMalloc(&dX, n * sizeof(double));
     cudaMalloc(&dY, n * sizeof(double));
     cudaMalloc(&dResult, n * sizeof(double));
     cudaMalloc(&dAlpha, sizeof(double));
-    *dAlpha = 2.0;
 
     cudaMallocHost(&hX, n * sizeof(double));
     cudaMallocHost(&hY, n * sizeof(double));
@@ -96,13 +95,14 @@ TEST(BlasDaxpyAPITest, AlphaAddr){
     cudaMallocHost(&hResult2, n * sizeof(double));
 
 
-    for(int i = 0; i < n; i++){
+    for(unsigned i = 0; i < n; i++){
         hX[i] = 3.0;
         hY[i] = 1.0;
     }
 
     cudaMemcpy(dX, hX, sizeof(double) * n, cudaMemcpyHostToDevice);
     cudaMemcpy(dY, hY, sizeof(double) * n, cudaMemcpyHostToDevice);
+    cudaMemcpy(dAlpha, &alpha, sizeof(double), cudaMemcpyHostToDevice);
 
     blasDaxpy(handle0,  n, &alpha, dX, dY, dResult);
     blasDaxpy(handle1,  n, dAlpha, dX, dY, dResult);
@@ -113,8 +113,8 @@ TEST(BlasDaxpyAPITest, AlphaAddr){
     cudaStreamSynchronize(stream0);
     cudaStreamSynchronize(stream1);
 
-    ASSERT_EQ(true,cmpData(hResult1,5,n));
-    ASSERT_EQ(true,cmpData(hResult2,5,n));
+    ASSERT_EQ(true,cmpData(hResult1,7,n));
+    ASSERT_EQ(true,cmpData(hResult2,7,n));
 
 
     ASSERT_EQ(BLAS_STATUS_SUCCESS, blasDestroy(handle0));
